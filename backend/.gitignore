@@ -8,3 +8,7 @@ __pycache__/
 .env.test
 DS_Store
 videos/
+runs/
+yolo11n.pt
+yolov5s.pt
+yolov8n.pt
