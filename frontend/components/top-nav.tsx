@@ -1,23 +1,30 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Upload, Activity, Library, BarChart2, Bell, Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Logo } from "@/components/logo"
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  Upload,
+  Activity,
+  Library,
+  BarChart2,
+  Bell,
+  Search,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Logo } from "@/components/logo";
 
 interface TopNavProps {
-  onSearch?: (query: string) => void
+  onSearch?: (query: string) => void;
 }
 
 export function TopNav({ onSearch }: TopNavProps) {
-  const router = useRouter()
+  const router = useRouter();
 
   const handleNavigation = (path: string) => {
-    router.push(path)
-  }
+    router.push(path);
+  };
 
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-xl bg-slate-900/50 border-b border-slate-800">
@@ -31,7 +38,9 @@ export function TopNav({ onSearch }: TopNavProps) {
               <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-500">
                 SENTINEL
               </span>
-              <span className="text-xs text-slate-400">Intelligent Surveillance</span>
+              <span className="text-xs text-slate-400">
+                Intelligent Surveillance
+              </span>
             </div>
           </Link>
 
@@ -46,7 +55,7 @@ export function TopNav({ onSearch }: TopNavProps) {
         </div>
 
         <div className="flex items-center gap-6">
-          <nav className="flex items-center gap-4">
+          {/* <nav className="flex items-center gap-4">
             {[
               { icon: Activity, label: "Live", path: "/" },
               { icon: Upload, label: "Upload", path: "/upload" },
@@ -63,7 +72,7 @@ export function TopNav({ onSearch }: TopNavProps) {
                 <span className="ml-2">{item.label}</span>
               </Button>
             ))}
-          </nav>
+          </nav> */}
 
           <div className="flex items-center gap-4 ml-4 pl-4 border-l border-slate-800">
             <Button variant="ghost" size="icon" className="relative">
@@ -79,6 +88,5 @@ export function TopNav({ onSearch }: TopNavProps) {
         </div>
       </div>
     </nav>
-  )
+  );
 }
-
