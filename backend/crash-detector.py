@@ -86,7 +86,7 @@ if car_cascade.empty():
     raise IOError('Unable to load the car cascade classifier XML file')
 
 # Capture video from the file
-video_src = './videos/UHD 3840x2160 24fps.mp4'
+video_src = './videos/cam-001.mp4'
 cap = cv2.VideoCapture(video_src)
 
 # Check if the video is opened correctly
@@ -95,7 +95,7 @@ if not cap.isOpened():
 
 # Define the codec and create VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-out = cv2.VideoWriter('result.avi', fourcc, 10, (450, 250))
+out = cv2.VideoWriter('result.avi', fourcc, 60, (450, 250))
 
 while True:
     ret, img = cap.read()

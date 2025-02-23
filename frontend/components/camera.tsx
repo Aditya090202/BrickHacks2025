@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Button } from "./ui/button";
-import { Maximize2 } from "lucide-react";
+import * as tf from "@tensorflow/tfjs";
+import * as cocossd from "@tensorflow-models/coco-ssd";
 
 export interface CameraProps {
   id: string;
@@ -15,17 +15,112 @@ export interface CameraProps {
 }
 
 export function Camera(props: CameraProps) {
-  const videoRef = useRef<HTMLImageElement | null>(null);
+  // if crash detected -> send alert
+
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [ws, setWs] = useState<WebSocket | null>(null);
+  const modelRef = useRef<cocossd.ObjectDetection | null>(null);
+  const frameCountRef = useRef(0);
+  const previousPredictionsRef = useRef<cocossd.DetectedObject[]>([]);
+
+  const detectCrash = (
+    currentPredictions: cocossd.DetectedObject[],
+    previousPredictions: cocossd.DetectedObject[]
+  ) => {
+    const threshold = 45650; // Adjust this value based on your needs
+    for (const current of currentPredictions) {
+      const previous = previousPredictions.find(
+        (p) => p.class === current.class
+      );
+      if (previous) {
+        const [x1, y1, w1, h1] = current.bbox;
+        const [x2, y2, w2, h2] = previous.bbox;
+        const distance = Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+        const sizeDiff = Math.abs(w1 * h1 - w2 * h2);
+        if (distance > threshold || sizeDiff > threshold) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const detectObjects = useCallback(
+    async (img: HTMLImageElement, ctx: CanvasRenderingContext2D) => {
+      if (modelRef.current) {
+        const predictions = await modelRef.current.detect(img, undefined, 0.4);
+        const vehiclePredictions = predictions.filter((pred) =>
+          ["car", "truck", "bus", "motorcycle"].includes(pred.class)
+        );
+
+        const isCrash = detectCrash(
+          vehiclePredictions,
+          previousPredictionsRef.current
+        );
+        if (isCrash) {
+          const currentTime = new Date().toISOString();
+          console.log(`Crash detected on camera ${props.id} at ${currentTime}`);
+        }
+
+        previousPredictionsRef.current = vehiclePredictions;
+
+        vehiclePredictions.forEach((prediction) => {
+          ctx.strokeStyle = isCrash ? "red" : "green";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(...prediction.bbox);
+
+          ctx.fillStyle = isCrash ? "red" : "green";
+          ctx.font = "16px Arial";
+          ctx.fillText(
+            `${prediction.class} ${Math.round(prediction.score * 100)}%`,
+            prediction.bbox[0],
+            prediction.bbox[1] > 10 ? prediction.bbox[1] - 5 : 10
+          );
+        });
+      }
+    },
+    [props.id]
+  );
 
   useEffect(() => {
+    const loadModel = async () => {
+      await tf.ready();
+      await tf.setBackend("webgl");
+      modelRef.current = await cocossd.load({
+        base: "mobilenet_v2",
+      });
+    };
+    loadModel();
+
     const websocket = new WebSocket(`ws://localhost:8000/ws/${props.id}`);
 
-    websocket.onmessage = (event) => {
+    websocket.onmessage = async (event) => {
+      frameCountRef.current += 1;
+      if (frameCountRef.current % 3 !== 0) return; // Process every 3rd frame
+
       const imgSrc = `data:image/jpeg;base64,${event.data}`;
-      if (videoRef.current) {
-        videoRef.current.src = imgSrc;
-      }
+      const img = new Image();
+      img.onload = async () => {
+        if (canvasRef.current) {
+          const canvas = canvasRef.current;
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0);
+
+            await detectObjects(img, ctx);
+
+            // Draw gradient overlay
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, "rgba(0,0,0,0)");
+            gradient.addColorStop(1, "rgba(0,0,0,0.5)");
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+      };
+      img.src = imgSrc;
     };
 
     setWs(websocket);
@@ -33,7 +128,7 @@ export function Camera(props: CameraProps) {
     return () => {
       websocket.close();
     };
-  }, [props.id]);
+  }, [props.id, detectObjects]);
 
   return (
     <motion.div
@@ -44,19 +139,7 @@ export function Camera(props: CameraProps) {
       className="group relative rounded-xl overflow-hidden bg-slate-800/50 backdrop-blur-sm border border-slate-700 hover:border-purple-500/50 transition-all"
     >
       <div className="aspect-video relative">
-        <img ref={videoRef} alt="Live Stream" className="w-full h-auto" />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
-
-        <div className="absolute top-4 right-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={() => props.setSelectedCamera(props)}
-          >
-            <Maximize2 className="h-4 w-4" />
-          </Button>
-        </div>
+        <canvas ref={canvasRef} className="w-full h-auto" />
 
         <div className="absolute bottom-4 left-4 right-4">
           <h3 className="text-lg font-semibold text-white mb-1">
@@ -66,9 +149,5 @@ export function Camera(props: CameraProps) {
         </div>
       </div>
     </motion.div>
-    // <div>
-    //   <h3>Live Camera {id}</h3>
-    //   <img ref={videoRef} alt="Live Stream" className="w-full h-auto" />
-    // </div>
   );
 }

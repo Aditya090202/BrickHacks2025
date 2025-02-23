@@ -22,13 +22,13 @@ class WebSocketManager:
             print(f"Camera {camera_id} disconnected.")
 
     async def send_frames(self, websocket: WebSocket, camera_id: str):
-        cap = cv2.VideoCapture("videos/car.mp4")  # Use a webcam or video stream
+        cap = cv2.VideoCapture(f"videos/{camera_id}.mp4")  # Use a webcam or video stream
         
         try:
             while cap.isOpened():
                 ret, frame = cap.read()
                 if not ret:
-                    print('end')
+                    # print('end', camera_id)
                     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                     continue
                 

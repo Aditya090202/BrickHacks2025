@@ -23,24 +23,24 @@ const cameras = [
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-mhlVxW6VZrWcl5j1fKTh9ZlH9BC4E5.png",
   },
-  {
-    id: "cam-003",
-    name: "Dashcam 3",
-    location: "Golden Dreams Jewellery, Delhi",
-    status: "active",
-    video: "/videos/car.mp4",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-mhlVxW6VZrWcl5j1fKTh9ZlH9BC4E5.png",
-  },
-  {
-    id: "cam-004",
-    name: "Dashcam 4",
-    location: "Central Warehouse, Singapore",
-    status: "active",
-    video: "/videos/car.mp4",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-mhlVxW6VZrWcl5j1fKTh9ZlH9BC4E5.png",
-  },
+  // {
+  //   id: "cam-003",
+  //   name: "Dashcam 3",
+  //   location: "Golden Dreams Jewellery, Delhi",
+  //   status: "active",
+  //   video: "/videos/car.mp4",
+  //   image:
+  //     "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-mhlVxW6VZrWcl5j1fKTh9ZlH9BC4E5.png",
+  // },
+  // {
+  //   id: "cam-004",
+  //   name: "Dashcam 4",
+  //   location: "Central Warehouse, Singapore",
+  //   status: "active",
+  //   video: "/videos/car.mp4",
+  //   image:
+  //     "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-mhlVxW6VZrWcl5j1fKTh9ZlH9BC4E5.png",
+  // },
 ];
 
 interface CameraGridProps {
@@ -60,7 +60,7 @@ export function CameraGrid({ searchQuery }: CameraGridProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
         {filteredCameras.map((camera, index) => (
           <Camera
             key={camera.id}
