@@ -63,7 +63,7 @@ export function Camera(props: CameraProps) {
 
           // console.log(props.id, crashCountRef.current);
           if (crashCountRef.current === 7) {
-            const currentTime = new Date().toISOString();
+            const currentTime = new Date().toLocaleString();
             // console.log(
             //   `Crash detected on camera ${props.id} at ${currentTime}`
             // );
@@ -74,6 +74,7 @@ export function Camera(props: CameraProps) {
               action_type: "crash_detected",
               crash_id: `crash_${props.id}`, // id of camera
               timestamp: currentTime,
+              location: props.location,
             };
 
             fetch("http://localhost:8000/process_input/", {

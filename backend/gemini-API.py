@@ -9,6 +9,7 @@ from google.genai import types
 import json
 
 load_dotenv()
+load_dotenv(".env.local")
 
 class CrashEvent:
     def __init__(self, is_crash: bool, confidence: float, timestamp: str, description: str):

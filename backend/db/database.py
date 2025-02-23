@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 
 # Load dotenv
-load_dotenv('.env.local')
+load_dotenv(".env.local")
 MONGODB_URL = os.getenv("MONGODB_URL")
 
 class AtlasClient():
