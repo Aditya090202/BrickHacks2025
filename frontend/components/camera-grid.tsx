@@ -8,8 +8,8 @@ import { Sidebar } from "./sidebar";
 const cameras = [
   {
     id: "cam-001",
-    name: "Dashcam 1",
-    location: "Rajesh Jewellers, Mumbai",
+    name: "cam-001",
+    location: "New York City, New York",
     status: "active",
     video: "/videos/car.mp4",
     image:
@@ -17,8 +17,8 @@ const cameras = [
   },
   {
     id: "cam-002",
-    name: "Dashcam 2",
-    location: "Speed Zone Motorsports, Charlotte",
+    name: "cam-002",
+    location: "Buffalo, New York",
     status: "active",
     video: "/videos/car.mp4",
     image:
