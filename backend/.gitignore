@@ -6,3 +6,5 @@ __pycache__/
 .env.production.local
 .env.development
 .env.test
+DS_Store
+videos/
