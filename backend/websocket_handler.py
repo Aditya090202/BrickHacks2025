@@ -28,7 +28,7 @@ class WebSocketManager:
             while cap.isOpened():
                 ret, frame = cap.read()
                 if not ret:
-                    # print('end')
+                    print('end')
                     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                     continue
                 
