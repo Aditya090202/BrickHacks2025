@@ -4,37 +4,42 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-# load_dotenv()
+# Load dotenv
 load_dotenv('.env.local')
 MONGODB_URL = os.getenv("MONGODB_URL")
 
-# # Replace this with your MongoDB Atlas connection string
-# MONGODB_URL = "mongodb+srv://<username>:<password>@<cluster>.mongodb.net/mydb?retryWrites=true&w=majority"
+class AtlasClient():
+    def __init__(self, dbname, altas_uri=MONGODB_URL):
+        # Use motor for async operations
+        self.mongodb_client = motor.motor_asyncio.AsyncIOMotorClient(altas_uri)
+        self.database = self.mongodb_client[dbname]
 
-class AtlasClient ():
+    async def ping(self):
+        # Test connection (async)
+        await self.mongodb_client.admin.command('ping')
+        print("Connected to Atlas instance")
 
-   def __init__ (self, dbname,altas_uri=MONGODB_URL):
-    #    print(MONGODB_URL)
-       self.mongodb_client = MongoClient(altas_uri)
-       self.database = self.mongodb_client[dbname]
+    def get_collection(self, collection_name):
+        collection = self.database[collection_name]
+        return collection
 
-   ## A quick way to test if we can connect to Atlas instance
-   def ping (self):
-       self.mongodb_client.admin.command('ping')
-       print("Connected to Atlas instance")
+    async def find(self, collection_name, filter={}, limit=0):
+        collection = self.database[collection_name]
+        items = await collection.find(filter).to_list(limit)
+        return items
 
-   def get_collection (self, collection_name):
-       collection = self.database[collection_name]
-       return collection
+    async def insert_one(self, collection_name, document):
+        collection = self.database[collection_name]
+        result = await collection.insert_one(document)
+        return result
 
-   def find (self, collection_name, filter = {}, limit=0):
-       collection = self.database[collection_name]
-       items = list(collection.find(filter=filter, limit=limit))
-       return items
-   
+    async def find_one(self, collection_name, filter={}):
+        collection = self.database[collection_name]
+        return await collection.find_one(filter)
+
+
 # Helper class to handle ObjectId conversion
 class PyObjectId(ObjectId):
-
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
@@ -48,3 +53,10 @@ class PyObjectId(ObjectId):
     @classmethod
     def __modify_schema__(cls, field_schema):
         field_schema.update(type="string")
+
+
+# Convert ObjectId to string for easier serialization
+def objectid_to_str(obj):
+    if isinstance(obj, ObjectId):
+        return str(obj)
+    return obj
