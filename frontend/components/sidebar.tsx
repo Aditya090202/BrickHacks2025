@@ -1,5 +1,7 @@
 import { Camera } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Toaster } from "sonner";
+import AskIncidents from "./chatbot";
 
 const incidents = [
   {
@@ -21,7 +23,7 @@ const incidents = [
 export function Sidebar() {
   return (
     <div className="w-96 rounded-xl backdrop-blur-sm bg-slate-800/50 border border-slate-700 p-6">
-      <div className="space-y-6">
+      <div className="space-y-6 pb-24">
         <div>
           <h2 className="text-lg font-semibold text-white mb-4">
             System Status
@@ -60,10 +62,10 @@ export function Sidebar() {
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold text-white mb-4">
-            Recent Incidents
-          </h2>
-          <div className="space-y-3">
+          {/* <h2 className="text-lg font-semibold text-white mb-4">
+            Ask Recent Incidents
+          </h2> */}
+          {/* <div className="space-y-3">
             {incidents.map((incident) => (
               <div
                 key={incident.id}
@@ -86,9 +88,16 @@ export function Sidebar() {
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
+          <AskIncidents />
         </div>
       </div>
+      <Toaster
+        position="bottom-right"
+        style={{
+          left: "15px", // Adjust this value to move it further right
+        }}
+      />
     </div>
   );
 }

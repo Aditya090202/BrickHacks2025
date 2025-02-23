@@ -24,22 +24,25 @@ class WebSocketManager:
 
     async def send_frames(self, websocket: WebSocket, camera_id: str):
         cap = cv2.VideoCapture(f"videos/{camera_id}.mp4")  # Use a webcam or video stream
-        turn = 0
+        new = False
         try:
             while cap.isOpened():
                 ret, frame = cap.read()
                 if not ret:
                     # print('end', camera_id)
                     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-                    turn += 1
+                    new = True
+                    # print('sending new')
                     continue
                 
                 _, buffer = cv2.imencode(".jpg", frame)
                 frame_base64 = base64.b64encode(buffer).decode("utf-8")
                 data = {
                     'frame':frame_base64,
-                    'turn':turn
+                    'new':new
                 }
+                
+                new = False
                 await websocket.send_text(json.dumps(data))
                 await asyncio.sleep(0.01)  # Send frames at 10 FPS
         except Exception as e:

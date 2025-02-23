@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import * as tf from "@tensorflow/tfjs";
 import * as cocossd from "@tensorflow-models/coco-ssd";
+import { Toaster, toast } from "sonner";
 
 export interface CameraProps {
   id: string;
@@ -16,7 +17,7 @@ export interface CameraProps {
 
 export function Camera(props: CameraProps) {
   // if crash detected -> send alert
-  let crashCount = 0;
+  const crashCountRef = useRef(0);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const modelRef = useRef<cocossd.ObjectDetection | null>(null);
@@ -58,11 +59,15 @@ export function Camera(props: CameraProps) {
           previousPredictionsRef.current
         );
         if (isCrash) {
-          crashCount += 1;
+          crashCountRef.current += 1;
 
-          if (crashCount === 10) {
+          // console.log(props.id, crashCountRef.current);
+          if (crashCountRef.current === 7) {
             const currentTime = new Date().toISOString();
-            console.log(
+            // console.log(
+            //   `Crash detected on camera ${props.id} at ${currentTime}`
+            // );
+            toast.error(
               `Crash detected on camera ${props.id} at ${currentTime}`
             );
             const crashData = {
@@ -113,7 +118,7 @@ export function Camera(props: CameraProps) {
         });
       }
     },
-    []
+    [props.id]
   );
 
   useEffect(() => {
@@ -130,11 +135,15 @@ export function Camera(props: CameraProps) {
 
     websocket.onmessage = async (event) => {
       const data = JSON.parse(event.data);
-
+      if (data.new) {
+        // console.log("here");
+        crashCountRef.current = 0;
+      }
       frameCountRef.current += 1;
       if (frameCountRef.current % 3 !== 0) return; // Process every 3rd frame
 
       const imgSrc = `data:image/jpeg;base64,${data.frame}`;
+
       const img = new Image();
       img.onload = async () => {
         if (canvasRef.current) {

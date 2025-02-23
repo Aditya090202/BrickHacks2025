@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { VideoModal } from "@/components/video-modal";
 import { Camera } from "./camera";
+import { Sidebar } from "./sidebar";
 
 const cameras = [
   {
@@ -70,12 +71,11 @@ export function CameraGrid({ searchQuery }: CameraGridProps) {
           />
         ))}
       </div>
-
-      <VideoModal
+      {/* <VideoModal
         isOpen={!!selectedCamera}
         onClose={() => setSelectedCamera(null)}
         camera={selectedCamera}
-      />
+      /> */}
     </>
   );
 }

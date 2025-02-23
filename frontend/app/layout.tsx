@@ -2,6 +2,7 @@ import type React from "react";
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Modern Security Dashboard",
@@ -19,6 +20,7 @@ export default function RootLayout({
         className={`${GeistSans.className} bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950`}
       >
         {children}
+        {/* <Toaster /> */}
       </body>
     </html>
   );
