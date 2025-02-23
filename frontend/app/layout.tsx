@@ -2,7 +2,6 @@ import type React from "react";
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
-import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "SafeTrack",

@@ -58,7 +58,7 @@ export function TopNav({ onSearch }: TopNavProps) {
           {/* <nav className="flex items-center gap-4">
             {[
               { icon: Activity, label: "Live", path: "/" },
-              { icon: Upload, label: "Upload", path: "/upload" },
+              { icon: Upload, label: "Face", path: "/upload" },
               { icon: Library, label: "Library", path: "/library" },
               { icon: BarChart2, label: "Analytics", path: "/analytics" },
             ].map((item) => (
