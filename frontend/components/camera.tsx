@@ -15,6 +15,22 @@ export interface CameraProps {
   setSelectedCamera: (camera: CameraProps | null) => void;
 }
 
+const EmergencyToast = ({ message }) => (
+  <div>
+    <p>Emergency situation detected! {message} </p>
+    <button
+      onClick={() => {
+        // In a real application, you would integrate with a phone API here
+        console.log("Calling 911");
+        toast.dismiss();
+      }}
+      className="bg-red-600 text-white px-4 py-2 rounded"
+    >
+      Call 911
+    </button>
+  </div>
+);
+
 export function Camera(props: CameraProps) {
   // if crash detected -> send alert
   const crashCountRef = useRef(0);
@@ -62,13 +78,18 @@ export function Camera(props: CameraProps) {
           crashCountRef.current += 1;
 
           // console.log(props.id, crashCountRef.current);
-          if (crashCountRef.current === 7) {
+          if (crashCountRef.current === 8) {
             const currentTime = new Date().toLocaleString();
             // console.log(
             //   `Crash detected on camera ${props.id} at ${currentTime}`
             // );
-            toast.error(
-              `Crash detected on camera ${props.id} at ${currentTime}`
+            // toast.error(
+            //   `Crash detected on camera ${props.id} at ${currentTime}`
+            // );
+            toast(
+              <EmergencyToast
+                message={`Crash detected on camera ${props.id} at ${currentTime}`}
+              />
             );
             const crashData = {
               action_type: "crash_detected",
