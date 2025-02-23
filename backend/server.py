@@ -1,10 +1,19 @@
 from typing import Union
 
-from fastapi import FastAPI
-
+from fastapi import FastAPI, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
+from websocket_handler import websocket_manager
 from db.database import AtlasClient
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 DB_NAME = 'brickhack-2025'
 
@@ -26,10 +35,13 @@ To use database, include the following code:
         #   collection.delete_one()
 '''
 
+@app.websocket("/ws/{camera_id}")
+async def websocket_endpoint(websocket: WebSocket, camera_id: str):
+    await websocket_manager.handle_connection(websocket, camera_id)
+
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
-
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
