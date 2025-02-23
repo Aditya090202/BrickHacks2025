@@ -16,7 +16,7 @@ export interface CameraProps {
 
 export function Camera(props: CameraProps) {
   // if crash detected -> send alert
-
+  let crashCount = 0;
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const modelRef = useRef<cocossd.ObjectDetection | null>(null);
@@ -58,8 +58,42 @@ export function Camera(props: CameraProps) {
           previousPredictionsRef.current
         );
         if (isCrash) {
-          const currentTime = new Date().toISOString();
-          console.log(`Crash detected on camera ${props.id} at ${currentTime}`);
+          crashCount += 1;
+
+          if (crashCount === 10) {
+            const currentTime = new Date().toISOString();
+            console.log(
+              `Crash detected on camera ${props.id} at ${currentTime}`
+            );
+            const crashData = {
+              action_type: "crash_detected",
+              crash_id: `crash_${props.id}`, // id of camera
+              timestamp: currentTime,
+            };
+
+            fetch("http://localhost:8000/process_input/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(crashData),
+            })
+              .then((response) => response.json())
+              .then((data) => console.log("Crash data processed:", data))
+              .catch((error) =>
+                console.error("Error sending crash data:", error)
+              );
+          }
+          //       /*
+          //       const stuff = {
+          //   action_type: "crash_detected",
+          //   crash_id: "crash_67832130",
+          //   timestamp: "2025-02-22T12:34:56",
+          // }; */
+          //       console.log(seenTurn, thisTurn);
+          //     } else {
+          //       console.log("Seen turn doing nothing");
+          //     }
         }
 
         previousPredictionsRef.current = vehiclePredictions;
@@ -79,7 +113,7 @@ export function Camera(props: CameraProps) {
         });
       }
     },
-    [props.id]
+    []
   );
 
   useEffect(() => {
@@ -95,10 +129,12 @@ export function Camera(props: CameraProps) {
     const websocket = new WebSocket(`ws://localhost:8000/ws/${props.id}`);
 
     websocket.onmessage = async (event) => {
+      const data = JSON.parse(event.data);
+
       frameCountRef.current += 1;
       if (frameCountRef.current % 3 !== 0) return; // Process every 3rd frame
 
-      const imgSrc = `data:image/jpeg;base64,${event.data}`;
+      const imgSrc = `data:image/jpeg;base64,${data.frame}`;
       const img = new Image();
       img.onload = async () => {
         if (canvasRef.current) {

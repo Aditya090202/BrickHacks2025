@@ -83,6 +83,7 @@ async def handle_other_action(input_data):
 @app.post("/process_input/")
 async def process_input(input: CrashInput):
     """Process the input and execute specific actions based on action_type"""
+    
     if input.action_type == "crash_detected":
         result = await handle_crash_detected(input.crash_id, input.timestamp)
         # Convert ObjectId to string before returning the response
