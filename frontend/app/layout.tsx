@@ -5,7 +5,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "Modern Security Dashboard",
+  title: "SafeTrack",
   description: "Next-generation security monitoring system",
 };
 
