@@ -7,3 +7,4 @@ __pycache__/
 .env.development
 .env.test
 DS_Store
+videos/
