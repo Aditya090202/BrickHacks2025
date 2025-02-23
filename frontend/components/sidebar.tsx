@@ -35,7 +35,7 @@ export function Sidebar() {
                   <Camera className="h-5 w-5 text-purple-400" />
                   <span className="font-medium text-white">Cameras Online</span>
                 </div>
-                <span className="text-sm text-slate-300">2/2</span>
+                <span className="text-sm text-slate-300">3/3</span>
               </div>
               <Progress
                 value={100}

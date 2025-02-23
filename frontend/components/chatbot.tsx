@@ -13,6 +13,12 @@ const llm = new ChatOpenAI({
   temperature: 0.7,
 });
 
+const cameras = [
+  { "cam-001": "New York City, New York" },
+  { "cam-002": "Buffalo, New York" },
+  { "cam-003": "RIT, Rochester" },
+];
+
 export default function AskIncidents() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<
@@ -48,7 +54,7 @@ Key traits:
 - If asked about topics not in the context, politely redirect to relevant information that is available.
 
 Guidelines:
-- Only use information explicitly stated in the context data.
+- Only use information explicitly stated in the context data or with the information given about the active cameras and their respective locations.
 - If a question can't be answered using the context, politely say so and suggest topics that are covered.
 - Provide clear, concise information about security-related inquiries based on the context.
 - Do not speculate or infer information not present in the context.
@@ -56,11 +62,20 @@ Guidelines:
 Example response to an off-topic question:
 "I apologize, but I don't have information about that in my current context. However, I can provide details about [mention a relevant topic from the context]. Would you like to know more about that?"
 
+Currently there are ${
+            cameras.length
+          } active cameras. The cameras and their respective cities are ${JSON.stringify(
+            cameras
+          )}
+Remember: A camera can have a crash count of 0 if it is not in the context data.
+
 Context Data:
 ${JSON.stringify(contextData)}
 
 Please base your response entirely on this context and the user's input. Pretend that you know the context data by heart, and don't mention the word "Context Data". If asked about the time of an accident, convert the time given into human time, to help the user understand what time the accident occured.
-When asked about which camera had the latest crash, look at the crash_id of the context data. The camera name would go after the word "crash_" in the crash_id`,
+When asked about which camera had the latest crash, look at the crash_id of the context data. The camera name would go after the word "crash_" in the crash_id
+When asked about safe place, look for the location of the camera with the least amount of crashes. A camera can have total crashes of 0 if its not in the context. Explain why you think its the safest in a quick way.
+ `,
         },
         ...messages.map((msg) => ({ role: msg.role, content: msg.content })),
         { role: "user", content: input },

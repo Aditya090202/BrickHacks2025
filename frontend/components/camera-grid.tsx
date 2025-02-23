@@ -24,15 +24,15 @@ const cameras = [
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-mhlVxW6VZrWcl5j1fKTh9ZlH9BC4E5.png",
   },
-  // {
-  //   id: "cam-003",
-  //   name: "Dashcam 3",
-  //   location: "Golden Dreams Jewellery, Delhi",
-  //   status: "active",
-  //   video: "/videos/car.mp4",
-  //   image:
-  //     "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-mhlVxW6VZrWcl5j1fKTh9ZlH9BC4E5.png",
-  // },
+  {
+    id: "cam-003",
+    name: "cam-003",
+    location: "RIT, Rochester",
+    status: "active",
+    video: "/videos/car.mp4",
+    image:
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-mhlVxW6VZrWcl5j1fKTh9ZlH9BC4E5.png",
+  },
   // {
   //   id: "cam-004",
   //   name: "Dashcam 4",
