@@ -1,7 +1,7 @@
-import { Maximize2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { Button } from "./ui/button";
+import { Maximize2 } from "lucide-react";
 
 export interface CameraProps {
   id: string;
@@ -15,41 +15,25 @@ export interface CameraProps {
 }
 
 export function Camera(props: CameraProps) {
+  const videoRef = useRef<HTMLImageElement | null>(null);
+  const [ws, setWs] = useState<WebSocket | null>(null);
+
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8000/ws/${props.id}`);
-    ws.onopen = () => {
-      console.log("Connected to WebSocket");
-    };
-    const videoElement = document.querySelector("video");
-    const captureFrame = () => {
-      if (!videoElement) return;
+    const websocket = new WebSocket(`ws://localhost:8000/ws/${props.id}`);
 
-      const canvas = document.createElement("canvas");
-      canvas.width = videoElement.videoWidth;
-      canvas.height = videoElement.videoHeight;
-      const ctx = canvas.getContext("2d");
-
-      if (ctx) {
-        ctx.drawImage(videoElement, 0, 0);
-        const frame = canvas.toDataURL("image/jpeg", 0.8);
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(frame);
-        }
+    websocket.onmessage = (event) => {
+      const imgSrc = `data:image/jpeg;base64,${event.data}`;
+      if (videoRef.current) {
+        videoRef.current.src = imgSrc;
       }
     };
 
-    const interval = setInterval(() => {
-      if (ws.readyState === WebSocket.OPEN) {
-        captureFrame();
-      }
-    }, 5000);
+    setWs(websocket);
 
-    // Cleanup function
     return () => {
-      clearInterval(interval);
-      ws.close();
+      websocket.close();
     };
-  }, [props.id]); // Dependency array with props.id
+  }, [props.id]);
 
   return (
     <motion.div
@@ -60,17 +44,7 @@ export function Camera(props: CameraProps) {
       className="group relative rounded-xl overflow-hidden bg-slate-800/50 backdrop-blur-sm border border-slate-700 hover:border-purple-500/50 transition-all"
     >
       <div className="aspect-video relative">
-        <video
-          src={props.video}
-          autoPlay
-          loop
-          muted
-          playsInline
-          disablePictureInPicture
-          disableRemotePlayback
-          preload="auto"
-          className="object-cover w-full h-full"
-        />
+        <img ref={videoRef} alt="Live Stream" className="w-full h-auto" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
 
         <div className="absolute top-4 right-4">
@@ -92,5 +66,9 @@ export function Camera(props: CameraProps) {
         </div>
       </div>
     </motion.div>
+    // <div>
+    //   <h3>Live Camera {id}</h3>
+    //   <img ref={videoRef} alt="Live Stream" className="w-full h-auto" />
+    // </div>
   );
 }
