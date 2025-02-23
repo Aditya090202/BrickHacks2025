@@ -36,7 +36,7 @@ export function TopNav({ onSearch }: TopNavProps) {
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-500">
-                SENTINEL
+                SAFETRACK
               </span>
               <span className="text-xs text-slate-400">
                 Intelligent Surveillance
